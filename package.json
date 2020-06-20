@@ -1,0 +1,31 @@
+{
+  "name": "react-native-azure-cosmos",
+  "version": "1.0.1",
+  "description": "This package provide query and insert against azure cosmos db",
+  "main": "azurecosmos.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blazerroad/react-native-azure-cosmos.git"
+  },
+  "dependencies": {
+    "crypto-js": "^3.2.0"
+  },
+  "keywords": [
+    "react-native",
+    "react native",
+    "azure",
+    "microsoft",
+    "azure cosmos",
+    "azure query",
+    "azure insert"
+  ],
+  "author": "Blazerroad",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/blazerroad/react-native-azure-cosmos/issues"
+  },
+  "homepage": "https://github.com/blazerroad/react-native-azure-cosmos#readme"
+}
