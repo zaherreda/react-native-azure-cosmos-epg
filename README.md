@@ -50,3 +50,27 @@ azure = async () => {
   }
 ```
 
+
+
+Add Docs
+
+```javascript
+
+azure = async () => {
+    var response = await azurefetch({
+       uri: `https://${COSMOS-DB-URL}/dbs/${YOUR-DATABASE-NAME}/colls/${YOUR-COLL-NAME}/docs`,
+      body: {
+        "id": "testpackage",
+        "code": "098",
+        "name": "blazer",
+     
+      },
+      type: 'Docs',
+      partitionKey: '098'
+    });
+    console.log(response)
+    const res = await response.json();
+    console.log(res)
+
+  }
+```
