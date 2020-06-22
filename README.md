@@ -22,7 +22,14 @@ Init cosmos auth
 class App extends React.Component {
   constructor(props) {
     super(props);
-    initAzureCosmos({ masterKey: ${YOUR COSMOS DB MASTER KEY}, version: "2017-02-22" });
+    initAzureCosmos(
+    {
+      masterKey:${YOUR COSMOS DB MASTER KEY},
+      version: "2017-02-22",
+      dbUri: ${YOUR COSMOS DB URL},
+      dbname: ${YOUR COSMOS DB NAME},
+
+    }
     ...
   }
 ```
@@ -32,45 +39,55 @@ Run a query
 
 ```javascript
 azure = async () => {
-    var response = await azurefetch({
-      uri: `https://${COSMOS-DB-URL}/dbs/${YOUR-DATABASE-NAME}/colls/${YOUR-COLL-NAME}/docs`,
-      body: {
-        "query": "SELECT c.id FROM ${YPUR-COLL-NAME} c WHERE c.id = @id",
-        "parameters": [
-          { "name": "@id", "value": "1" }
-        ]
-      },
-      type : 'Query',
-      partitionKey: `{PARTION VALUE YOU WANT TO QUERY}`
-    });
-    console.log(response)
-    const res =await response.json();
-    console.log(res)
+   const response = await azurefetch({
+            dbname : "", //optional parameter if you want to quiry agiants another DB
+            col: ${COL NAME},
+            body: {
+                "query": "SELECT c.id FROM ${COL NAME} c WHERE c.uid = @email",
+                "parameters": [
+                    { "name": "@email", "value": email }
+                ]
+            },
+            type: 'Query',
+            partitionKey: ${PARTITION VALUE}
+        });
 
   }
 ```
 
 
 
-Add Docs
+INSERT new Docs
 
 ```javascript
 
 azure = async () => {
-    var response = await azurefetch({
-       uri: `https://${COSMOS-DB-URL}/dbs/${YOUR-DATABASE-NAME}/colls/${YOUR-COLL-NAME}/docs`,
-      body: {
-        "id": "testpackage",
-        "code": "098",
-        "name": "blazer",
-     
-      },
-      type: 'Docs',
-      partitionKey: '098'
-    });
-    console.log(response)
-    const res = await response.json();
-    console.log(res)
+    const response = await azurefetch({
+              col: ${COL NAME},
+              body: {
+                  "id": username,
+                  "code": code,
+                  "name": name,
+                  "photoUri": photoURL,
+              },
+              type: 'Insert',
+              partitionKey:  ${PARTITION VALUE}
+          });
+```
 
-  }
+
+
+
+Exec SP
+
+```javascript
+
+azure = async () => {
+   const response = await azurefetch({
+        spname: ${SP NAME},
+        col: ${COL NAME},
+        body: [id, { "photoUri": photoURL }],
+        type: 'Sp',
+        partitionKey: code
+    });
 ```

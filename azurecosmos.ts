@@ -1,21 +1,39 @@
 import { AzureToken, AzureQuieryHeader, AzureDocHeader } from './headers'
-import {IResolverElement,Resolver} from './resolver'
+import { IResolverElement, Resolver } from './resolver'
 
 type RequestType =
     | 'Query'
-    | 'Col'
-    | 'Docs'
+    | 'Insert'
+    | 'Update'
+    | 'Sp'
     ;
 
 
 
 interface AzureConfig {
     masterKey: string;
-    version: string
+    version: string;
+    dbUri: string;
+    dbname: string;
 }
 interface AzureCosmosElementResolver extends IResolverElement<RequestType> {
-    azurFetch(param: FetchParam): Promise<Response>;
+    azurFetch(param: BaseFetchParam): Promise<Response>;
 }
+
+abstract class BaseAzureCosmosElementResolver<T extends BaseFetchParam> implements AzureCosmosElementResolver {
+
+    abstract Key: RequestType;
+    abstract azurFetch(param: BaseFetchParam): Promise<Response>;
+    public dbname(param: T): string {
+        return param.dbname ? param.dbname : AzureCosmosLocator.config.dbname;
+    }
+    public uri(param: T): string {
+        return `${AzureCosmosLocator.config.dbUri}dbs/${this.dbname(param)}/colls/${param.col}/docs`
+    }
+
+
+}
+
 
 class AzureCosmosLocator extends Resolver<RequestType, AzureCosmosElementResolver> {
     static myInstance: AzureCosmosLocator = null;
@@ -31,8 +49,11 @@ class AzureCosmosLocator extends Resolver<RequestType, AzureCosmosElementResolve
 
     constructor() {
         super();
-        super.Add(new AzureQuiry())
-        super.Add(new AzureAddDocs())
+        super.Add(new AzureQuiry());
+        super.Add(new AzureAddDocs());
+        super.Add(new AzureUpdateDocs());
+        super.Add(new AzureSp());
+
     }
 }
 
@@ -41,22 +62,32 @@ export const initAzureCosmos = (config: AzureConfig) => {
     AzureCosmosLocator.config = config;
 }
 
-interface FetchParam {
-    uri: string,
+interface BaseFetchParam {
+    dbname?: string,
+    col: string,
     body: any,
     type: RequestType,
     partitionKey: string
 }
+interface UpdateFetchParam extends BaseFetchParam {
+    id: string
+}
+
+interface SpFetchParam extends BaseFetchParam {
+    spname: string
+}
 
 
-class AzureQuiry implements AzureCosmosElementResolver {
+class AzureQuiry extends BaseAzureCosmosElementResolver<BaseFetchParam> {
     Key: RequestType = 'Query';
     constructor() {
+        super()
     }
-    async azurFetch(param: FetchParam) {
-        const { auth, date } = AzureToken(param.uri, 'POST')
+    async azurFetch(param: BaseFetchParam) {
+        const uri = super.uri(param);
+        const { auth, date } = AzureToken(uri, 'POST')
         const header = AzureQuieryHeader(auth, date, param.partitionKey);
-        return fetch(param.uri, {
+        return fetch(uri, {
             method: 'POST',
             headers: header,
             body: JSON.stringify(param.body)
@@ -65,14 +96,39 @@ class AzureQuiry implements AzureCosmosElementResolver {
 }
 
 
-class AzureAddDocs implements AzureCosmosElementResolver {
-    Key: RequestType = 'Docs';
+class AzureAddDocs extends BaseAzureCosmosElementResolver<BaseFetchParam> {
+    Key: RequestType = 'Insert';
     constructor() {
+        super()
     }
-    async azurFetch(param: FetchParam) {
-        const { auth, date } = AzureToken(param.uri, 'POST')
+    async azurFetch(param: BaseFetchParam) {
+        const uri = super.uri(param);
+        const { auth, date } = AzureToken(uri, 'POST')
         const header = AzureDocHeader(auth, date, param.partitionKey);
-        return await fetch(param.uri, {
+        return await fetch(uri, {
+            method: 'POST',
+            headers: header,
+            body: JSON.stringify(param.body)
+        })
+    }
+}
+
+
+class AzureSp extends BaseAzureCosmosElementResolver<SpFetchParam> {
+    Key: RequestType = 'Sp';
+    constructor() {
+        super()
+    }
+
+    public uri(param: SpFetchParam): string {
+        return `${AzureCosmosLocator.config.dbUri}dbs/${super.dbname(param)}/colls/${param.col}/sprocs/${param.spname}`
+    }
+
+    async azurFetch(param: SpFetchParam) {
+        const uri = this.uri(param);
+        const { auth, date } = AzureToken(uri, 'POST')
+        const header = AzureDocHeader(auth, date, param.partitionKey);
+        return await fetch(uri, {
             method: 'POST',
             headers: header,
             body: JSON.stringify(param.body)
@@ -82,7 +138,31 @@ class AzureAddDocs implements AzureCosmosElementResolver {
 
 
 
-export const azurefetch = async (param: FetchParam) => {
+class AzureUpdateDocs extends BaseAzureCosmosElementResolver<UpdateFetchParam> {
+    Key: RequestType = 'Update';
+    constructor() {
+        super()
+    }
+
+    public uri(param: UpdateFetchParam): string {
+        return `${AzureCosmosLocator.config.dbUri}dbs/${super.dbname(param)}/colls/${param.col}/docs/${param.id}`
+    }
+
+    async azurFetch(param: UpdateFetchParam) {
+        const uri = this.uri(param);
+        const { auth, date } = AzureToken(uri, 'PUT')
+        const header = AzureDocHeader(auth, date, param.partitionKey);
+        return await fetch(uri, {
+            method: 'PUT',
+            headers: header,
+            body: JSON.stringify(param.body)
+        })
+    }
+}
+
+
+
+export const azurefetch = async (param: BaseFetchParam) => {
     let loctor = AzureCosmosLocator.getInstance();
     const reducer = loctor.Find(param.type);
     return reducer.azurFetch(param)

@@ -7,7 +7,7 @@ export const AzureToken = (url,method) => {
     const today = new Date();
     const UTCstring = today.toUTCString();
 
-    const strippedurl = url.replace(new RegExp('^https?://[^/]+/'), '/');
+    let strippedurl = url.replace(new RegExp('^https?://[^/]+/'), '/');
     const strippedparts = strippedurl.split("/");
     const truestrippedcount = (strippedparts.length - 1);
     let resourceId = "";
