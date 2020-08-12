@@ -3,7 +3,8 @@ import CryptoJS from 'crypto-js';
 
 export const AzureToken = (url,method) => {
 
-    const mastKey = "gLNLj4yNpqWGd6LUFGU7PuHcG7h3EIctW500HqfZt4nTXPCSxf7KA3YZ5wnsBfXIpq1S3sH3E4V6L3A2vQX7RQ==";
+    //const mastKey = "gLNLj4yNpqWGd6LUFGU7PuHcG7h3EIctW500HqfZt4nTXPCSxf7KA3YZ5wnsBfXIpq1S3sH3E4V6L3A2vQX7RQ==";
+    const mastKey = "vuz6NKtp2hX5YfMsRXSmiy1UKlDREu7FKX9VTymCRExivgQwyk3plFIxuOH5FAGFu66zHTkCB3WxLctAh7m0kw==";
     const today = new Date();
     const UTCstring = today.toUTCString();
 
@@ -39,6 +40,8 @@ export const AzureToken = (url,method) => {
     var base64Bits = CryptoJS.enc.Base64.stringify(signature);
     var MasterToken = "master";
     var TokenVersion = "1.0";
+    //console.log("RESID: "+resourceId);
+    //console.log("RESTYPE: "+resType);
     const auth = encodeURIComponent("type=" + MasterToken + "&ver=" + TokenVersion + "&sig=" + base64Bits);
 
     return { auth: auth, date: date }
@@ -47,7 +50,7 @@ export const AzureToken = (url,method) => {
 export const AzureDocHeader = (token, date, partitionkey) => {
     return {
         'Accept': 'application/json',
-        'x-ms-version': "2017-02-22",
+        'x-ms-version': "2018-12-31",
         'Authorization': token,
         'x-ms-date': date,
         'Content-Type': 'application/json',
