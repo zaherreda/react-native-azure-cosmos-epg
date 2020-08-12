@@ -1,6 +1,6 @@
 {
-  "name": "react-native-azure-cosmos",
-  "version": "1.0.7",
+  "name": "react-native-azure-cosmos-epg",
+  "version": "1.0.0",
   "description": "This package provide query and insert against azure cosmos db",
   "main": "azurecosmos.ts",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/blazerroad/react-native-azure-cosmos.git"
+    "url": "git+https://github.com/georjino/react-native-azure-cosmos-epg.git"
   },
   "dependencies": {
     "crypto-js": "^3.2.0"
@@ -22,10 +22,10 @@
     "azure query",
     "azure insert"
   ],
-  "author": "Blazerroad",
+  "author": "Georgino A.",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/blazerroad/react-native-azure-cosmos/issues"
+    "url": "https://github.com/georjino/react-native-azure-cosmos-epg/issues"
   },
-  "homepage": "https://github.com/blazerroad/react-native-azure-cosmos#readme"
+  "homepage": "https://github.com/georjino/react-native-azure-cosmos-epg#readme"
 }
