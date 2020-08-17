@@ -6,6 +6,8 @@ type RequestType =
     | 'Insert'
     | 'Update'
     | 'Sp'
+    |'AllCols'
+    |'ById'
     ;
 
 
@@ -53,7 +55,8 @@ class AzureCosmosLocator extends Resolver<RequestType, AzureCosmosElementResolve
         super.Add(new AzureAddDocs());
         super.Add(new AzureUpdateDocs());
         super.Add(new AzureSp());
-
+        super.Add(new AzureAllCols());
+        super.Add(new AzureById());
     }
 }
 
@@ -96,6 +99,45 @@ class AzureQuiry extends BaseAzureCosmosElementResolver<BaseFetchParam> {
 }
 
 
+class AzureAllCols extends BaseAzureCosmosElementResolver<BaseFetchParam> {
+    Key: RequestType = 'AllCols';
+    constructor() {
+        super()
+    }
+    async azurFetch(param: BaseFetchParam) {
+        const uri = super.uri(param);
+        const { auth, date } = AzureToken(uri, 'GET')
+        const header = AzureDocHeader(auth, date, param.partitionKey);
+        return await fetch(uri, {
+            method: 'GET',
+            headers: header,
+        })
+    }
+}
+
+
+
+class AzureById extends BaseAzureCosmosElementResolver<UpdateFetchParam> {
+    Key: RequestType = 'ById';
+    constructor() {
+        super()
+    }
+
+    public uri(param: UpdateFetchParam): string {
+        return `${AzureCosmosLocator.config.dbUri}dbs/${this.dbname(param)}/colls/${param.col}/docs/${param.id}`
+    }
+
+    async azurFetch(param: UpdateFetchParam) {
+        const uri = this.uri(param);
+        const { auth, date } = AzureToken(uri, 'GET')
+        const header = AzureDocHeader(auth, date, param.partitionKey);
+        return await fetch(uri, {
+            method: 'GET',
+            headers: header,
+        })
+    }
+}
+
 class AzureAddDocs extends BaseAzureCosmosElementResolver<BaseFetchParam> {
     Key: RequestType = 'Insert';
     constructor() {
@@ -103,8 +145,10 @@ class AzureAddDocs extends BaseAzureCosmosElementResolver<BaseFetchParam> {
     }
     async azurFetch(param: BaseFetchParam) {
         const uri = super.uri(param);
-        const { auth, date } = AzureToken(uri, 'POST')
+        console.log("URI"+uri);
+        const { auth, date } = AzureToken(uri, 'POST');
         const header = AzureDocHeader(auth, date, param.partitionKey);
+        console.log("HEADER: "+header.Authorization);
         return await fetch(uri, {
             method: 'POST',
             headers: header,
@@ -136,8 +180,6 @@ class AzureSp extends BaseAzureCosmosElementResolver<SpFetchParam> {
     }
 }
 
-
-
 class AzureUpdateDocs extends BaseAzureCosmosElementResolver<UpdateFetchParam> {
     Key: RequestType = 'Update';
     constructor() {
@@ -165,5 +207,5 @@ class AzureUpdateDocs extends BaseAzureCosmosElementResolver<UpdateFetchParam> {
 export const azurefetch = async (param: BaseFetchParam) => {
     let loctor = AzureCosmosLocator.getInstance();
     const reducer = loctor.Find(param.type);
-    return reducer.azurFetch(param)
+    return reducer.azurFetch(param);
 }
