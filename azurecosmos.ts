@@ -134,7 +134,7 @@ class AzureById extends BaseAzureCosmosElementResolver<UpdateFetchParam> {
         return await fetch(uri, {
             method: 'GET',
             headers: header,
-        })
+        }).then(response => response.json())
     }
 }
 
