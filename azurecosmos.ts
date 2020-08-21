@@ -130,7 +130,6 @@ class AzureById extends BaseAzureCosmosElementResolver<UpdateFetchParam> {
     async azurFetch(param: UpdateFetchParam) {
         const uri = this.uri(param);
         const { auth, date } = AzureToken(uri, 'GET')
-        console.log("AUTH"+auth);
         const header = AzureDocHeader(auth, date, param.partitionKey);
         return await fetch(uri, {
             method: 'GET',
@@ -146,17 +145,13 @@ class AzureAddDocs extends BaseAzureCosmosElementResolver<BaseFetchParam> {
     }
     async azurFetch(param: BaseFetchParam) {
         const uri = super.uri(param);
-        console.log("URI"+uri);
         const { auth, date } = AzureToken(uri, 'POST')
-        //console.log("AUTH"+auth);
         const header = AzureDocHeader(auth, date, param.partitionKey);
-        console.log("HEADER: "+header.Authorization);
         const response = await fetch(uri, {
             method: 'POST',
             headers: header,
             body: JSON.stringify(param.body)
         })
-        console.log(response);
         return response;
     }
 }
