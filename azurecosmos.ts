@@ -111,7 +111,7 @@ class AzureAllCols extends BaseAzureCosmosElementResolver<BaseFetchParam> {
         return await fetch(uri, {
             method: 'GET',
             headers: header,
-        })
+        }).then(response => response.json())
     }
 }
 
