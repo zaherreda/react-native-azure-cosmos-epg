@@ -1,4 +1,3 @@
-
 import CryptoJS from 'crypto-js';
 
 export const AzureToken = (url,method) => {
@@ -61,6 +60,10 @@ export const AzureQuieryHeader = (token, date, partitionkey) => {
     var bs = AzureDocHeader(token, date, partitionkey);
     bs['Content-Type'] = 'application/query+json';
     bs['x-ms-documentdb-isquery'] = "true";
+    bs['x-ms-documentdb-query-enablecrosspartition'] = "true";
+    delete bs['x-ms-documentdb-partitionkey'];
+    console.log('bs');
+    console.log(bs);
     return bs;
 
 }
