@@ -17,7 +17,6 @@ export const AzureToken = (url,method) => {
         if (truestrippedcount > 1) {
             var lastPart = strippedurl.lastIndexOf("/");
             resourceId = strippedurl.substring(1, lastPart);
-            console.log(resourceId);
         }
     }
     else {
@@ -39,8 +38,6 @@ export const AzureToken = (url,method) => {
     var base64Bits = CryptoJS.enc.Base64.stringify(signature);
     var MasterToken = "master";
     var TokenVersion = "1.0";
-    //console.log("RESID: "+resourceId);
-    //console.log("RESTYPE: "+resType);
     const auth = encodeURIComponent("type=" + MasterToken + "&ver=" + TokenVersion + "&sig=" + base64Bits);
 
     return { auth: auth, date: date }
@@ -62,8 +59,6 @@ export const AzureQuieryHeader = (token, date, partitionkey) => {
     bs['x-ms-documentdb-isquery'] = "true";
     bs['x-ms-documentdb-query-enablecrosspartition'] = "true";
     delete bs['x-ms-documentdb-partitionkey'];
-    console.log('bs');
-    console.log(bs);
     return bs;
 
 }
