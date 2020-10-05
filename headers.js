@@ -3,7 +3,7 @@ import CryptoJS from 'crypto-js';
 export const AzureToken = (url,method) => {
 
     //const mastKey = "gLNLj4yNpqWGd6LUFGU7PuHcG7h3EIctW500HqfZt4nTXPCSxf7KA3YZ5wnsBfXIpq1S3sH3E4V6L3A2vQX7RQ==";
-    const mastKey = "cWFk3AhIa0nW2odlWhFskJsPDBlsuScVn8UgUyStIzggXK36exGn3umMZ2sjTXKXfzrXy78tC2na2sNRZS873Q==";
+    const mastKey = "3fopwcbNYS0ivfWiiSru37zqnpfERjEoONRVYt1SrZRIqyMlRt2aR0xHYxgQjlNTuEF70vN8JnnVB76muAZHSg==";
     const today = new Date();
     const UTCstring = today.toUTCString();
 
