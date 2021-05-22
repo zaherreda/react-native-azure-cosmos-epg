@@ -18,7 +18,7 @@ interface AzureConfig {
     version: string;
     dbUri: string;
     dbname: string;
-    resourceTokens: string;
+    resourcesTokens: string;
 }
 interface AzureCosmosElementResolver extends IResolverElement<RequestType> {
     azurFetch(param: BaseFetchParam): Promise<Response>;
@@ -42,6 +42,8 @@ abstract class BaseAzureCosmosElementResolver<T extends BaseFetchParam> implemen
 class AzureCosmosLocator extends Resolver<RequestType, AzureCosmosElementResolver> {
     static myInstance: AzureCosmosLocator = null;
     static config: AzureConfig;
+
+    config.resourcesTokens = JSON.parse(config.resourcesTokens);
 
     static getInstance() {
         if (AzureCosmosLocator.myInstance == null) {
@@ -92,7 +94,14 @@ class AzureQuiry extends BaseAzureCosmosElementResolver<BaseFetchParam> {
     }
     async azurFetch(param: BaseFetchParam) {
         const uri = super.uri(param);
-        const { auth, date } = AzureToken(uri, 'POST',AzureCosmosLocator.config.masterKey)
+       
+        if(AzureCosmosLocator.config.masterKey != null) {
+            const { auth, date } = AzureToken(uri, 'POST',AzureCosmosLocator.config.masterKey)
+        }
+        else {
+            const { auth, date } = AzureResourceToken(AzureCosmosLocator.config.resourcesTokens, ${param.col})
+        }
+        
         const header = AzureQuieryHeader(auth, date, param.partitionKey);
         if(param.partitionKeyRangeId){
             header['x-ms-documentdb-partitionkeyrangeid'] = param.partitionKeyRangeId;
@@ -114,7 +123,14 @@ class AzureAllCols extends BaseAzureCosmosElementResolver<BaseFetchParam> {
     }
     async azurFetch(param: BaseFetchParam) {
         const uri = super.uri(param);
-        const { auth, date } = AzureToken(uri, 'GET',AzureCosmosLocator.config.masterKey)
+        
+        if(AzureCosmosLocator.config.masterKey != null) {
+            const { auth, date } = AzureToken(uri, 'GET',AzureCosmosLocator.config.masterKey)
+        }
+        else {
+            const { auth, date } = AzureResourceToken(AzureCosmosLocator.config.resourcesTokens, ${param.col})
+        }
+    
         const header = AzureDocHeader(auth, date, param.partitionKey);
         delete header['x-ms-documentdb-partitionkey'];
         return await fetch(uri, {
@@ -138,7 +154,12 @@ class AzureById extends BaseAzureCosmosElementResolver<UpdateFetchParam> {
 
     async azurFetch(param: UpdateFetchParam) {
         const uri = this.uri(param);
-        const { auth, date } = AzureToken(uri, 'GET',AzureCosmosLocator.config.masterKey)
+        if(AzureCosmosLocator.config.masterKey != null) {
+            const { auth, date } = AzureToken(uri, 'GET',AzureCosmosLocator.config.masterKey)
+        }
+        else {
+            const { auth, date } = AzureResourceToken(AzureCosmosLocator.config.resourcesTokens, ${param.col})
+        }
         const header = AzureDocHeader(auth, date, param.partitionKey);
         return await fetch(uri, {
             method: 'GET',
@@ -154,7 +175,14 @@ class AzureAddDocs extends BaseAzureCosmosElementResolver<BaseFetchParam> {
     }
     async azurFetch(param: BaseFetchParam) {
         const uri = super.uri(param);
-        const { auth, date } = AzureToken(uri, 'POST',AzureCosmosLocator.config.masterKey)
+
+        If(AzureCosmosLocator.config.masterKey != null) {
+            const { auth, date } = AzureToken(uri, 'POST',AzureCosmosLocator.config.masterKey)
+        }
+        else {
+            const { auth, date } = AzureResourceToken(AzureCosmosLocator.config.resourcesTokens, ${param.col})
+        }
+
         const header = AzureDocHeader(auth, date, param.partitionKey);
         const response = await fetch(uri, {
             method: 'POST',
@@ -178,7 +206,14 @@ class AzureSp extends BaseAzureCosmosElementResolver<SpFetchParam> {
 
     async azurFetch(param: SpFetchParam) {
         const uri = this.uri(param);
-        const { auth, date } = AzureToken(uri, 'POST',AzureCosmosLocator.config.masterKey)
+
+        if(AzureCosmosLocator.config.masterKey != null) {
+            const { auth, date } = AzureToken(uri, 'POST',AzureCosmosLocator.config.masterKey)
+        }
+        else {
+            const { auth, date } = AzureResourceToken(AzureCosmosLocator.config.resourcesTokens, ${param.col})
+        }
+
         const header = AzureDocHeader(auth, date, param.partitionKey);
         return await fetch(uri, {
             method: 'POST',
@@ -200,7 +235,14 @@ class AzureUpdateDocs extends BaseAzureCosmosElementResolver<UpdateFetchParam> {
 
     async azurFetch(param: UpdateFetchParam) {
         const uri = this.uri(param);
-        const { auth, date } = AzureToken(uri, 'PUT',AzureCosmosLocator.config.masterKey)
+
+        if(AzureCosmosLocator.config.masterKey != null) {
+            const { auth, date } = AzureToken(uri, 'PUT',AzureCosmosLocator.config.masterKey)
+        }
+        else {
+            const { auth, date } = AzureResourceToken(AzureCosmosLocator.config.resourcesTokens, ${param.col})
+        }
+    
         const header = AzureDocHeader(auth, date, param.partitionKey);
         return await fetch(uri, {
             method: 'PUT',
@@ -222,7 +264,14 @@ class AzurePKRange extends BaseAzureCosmosElementResolver<UpdateFetchParam> {
 
     async azurFetch(param: UpdateFetchParam) {
         const uri = this.uri(param);
-        const { auth, date } = AzureToken(uri, 'GET',AzureCosmosLocator.config.masterKey)
+        
+        if(AzureCosmosLocator.config.masterKey != null) {
+            const { auth, date } = AzureToken(uri, 'GET',AzureCosmosLocator.config.masterKey)
+        }
+        else {
+            const { auth, date } = AzureResourceToken(AzureCosmosLocator.config.resourcesTokens, ${param.col})
+        }
+    
         const header = AzureDocHeader(auth, date, param.partitionKey);
         delete header['x-ms-documentdb-partitionkey'];
         return await fetch(uri, {
