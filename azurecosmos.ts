@@ -18,6 +18,7 @@ interface AzureConfig {
     version: string;
     dbUri: string;
     dbname: string;
+    resourceTokens: string;
 }
 interface AzureCosmosElementResolver extends IResolverElement<RequestType> {
     azurFetch(param: BaseFetchParam): Promise<Response>;
