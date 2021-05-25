@@ -60,3 +60,20 @@ export const AzureQuieryHeader = (token, date, partitionkey) => {
     return bs;
 
 }
+
+export const AzureResourceToken = (resoourcesTokens,collectionName) => { 
+    const today = new Date();
+    const UTCstring = today.toUTCString();
+    var date = UTCstring.toLowerCase();
+    
+    var resTokenObj = resourcesTokens.filter(function(resTokens){
+        return resTokens.id.endsWith("_" + collectionName);
+    });
+    
+    var auth = null;
+    if(resTokenObj) {
+        auth = resTokenObj._token;
+    }   
+    
+     return { auth: auth, date: date }
+}
