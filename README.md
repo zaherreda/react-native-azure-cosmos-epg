@@ -7,17 +7,17 @@ npm i react-native-azure-cosmos-epg --save
 ```
 
 
-## Usage
+# Usage
 
-Import library
+## Import library
 
 ```javascript
 import { azurefetch, initAzureCosmos } from 'react-native-azure-cosmos-epg/azurecosmos'
 ```
 
-Init cosmos auth 
+## Init Cosmos Authentication 
 
-
+### Using Master Key
 ```javascript
 class App extends React.Component {
   constructor(props) {
@@ -33,9 +33,31 @@ class App extends React.Component {
     ...
   }
 ```
+### Using Resource Tokens
+```javascript
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    initAzureCosmos(
+    {
+      masterKey:'',
+      version: "2018-12-31",
+      dbUri: ${YOUR COSMOS DB URL},
+      dbname: ${YOUR COSMOS DB NAME},
+      resourcesTokens: ${USER RESOURCE TOKENS FROM BROKER SERVICE}
+    }
+    ...
+  }
+```
+Broker should append the collection (container) name to the resource token ID, example for a collection called 'Countries': 
+```text
+ ...
+ "id": "SOMEIDHERE_Countries",
+ ...
+```
+Notice the underscore. 
 
-
-Run a query 
+## Run a Query 
 
 ```javascript
 azure = async () => {
@@ -55,9 +77,7 @@ azure = async () => {
   }
 ```
 
-
-
-INSERT new Docs
+## Insert New Documents
 
 ```javascript
 
@@ -75,10 +95,7 @@ azure = async () => {
           });
 ```
 
-
-
-
-Exec SP
+## Execute Stored Procedure
 
 ```javascript
 
