@@ -1,7 +1,7 @@
 import CryptoJS from 'crypto-js';
 
-export const AzureToken = (url,method,mastKey) => {
-    //const mastKey = "gLNLj4yNpqWGd6LUFGU7PuHcG7h3EIctW500HqfZt4nTXPCSxf7KA3YZ5wnsBfXIpq1S3sH3E4V6L3A2vQX7RQ==";
+export const AzureToken = (url, method, mastKey) => {
+
     const today = new Date();
     const UTCstring = today.toUTCString();
 
@@ -61,19 +61,19 @@ export const AzureQuieryHeader = (token, date, partitionkey) => {
 
 }
 
-export const AzureResourceToken = (resoourcesTokens,collectionName) => { 
+export const AzureResourceToken = (resourcesTokens, collectionName) => {
     const today = new Date();
     const UTCstring = today.toUTCString();
     var date = UTCstring.toLowerCase();
-    
-    var resTokenObj = resourcesTokens.filter(function(resTokens){
+
+    var resTokenObj = resourcesTokens.filter(function (resTokens) {
         return resTokens.id.endsWith("_" + collectionName);
     });
-    
-    var auth = null;
-    if(resTokenObj) {
-        auth = resTokenObj._token;
-    }   
-    
-     return { auth: auth, date: date }
+
+    var auth = '';
+    if (resTokenObj) {
+        auth = encodeURIComponent(resTokenObj[0]._token);
+    }
+
+    return { auth: auth, date: date }
 }
